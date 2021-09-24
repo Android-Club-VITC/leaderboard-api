@@ -1,23 +1,28 @@
 const jwt = require("jsonwebtoken");
 
 const createToken = (email) => {
-    const t = jwt.sign({
-        data: 'foobar'
-    }, 'SECRET', { expiresIn: '1h' });
+  const t = jwt.sign(
+    {
+      email,
+      iss: process.env.JWT_ISSUER,
+    },
+    process.env.JWT_CERT,
+    { expiresIn: "1h" }
+  );
+  return t;
+};
 
-    return t
-}
-
-const decodeToken = () => {
-    try {
-        var decoded = jwt.verify(token, 'SECRET');
-        return decoded,false
-    } catch(err) {
-        return null,true
-    }
-}
+const decodeToken = (token) => {
+  try {
+    var decoded = jwt.verify(token, process.env.JWT_CERT, { issuer: process.env.JWT_ISSUER });
+    return decoded;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
 
 module.exports = {
-    createToken,
-    decodeToken
-}
+  createToken,
+  decodeToken,
+};
