@@ -1,3 +1,5 @@
+const serverless = require("serverless-http")
+
 // loading env variables
 const dotenv = require('dotenv');
 dotenv.config();
