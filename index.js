@@ -19,10 +19,8 @@ app.get('/health', function (req, res) {
   res.send('200 OK')
 })
 
-if(process.env.IS_SERVERLESS){
-  const serverless = require("serverless-http")
-  module.exports.handler = serverless(app);
-}else{
-  // port to listen on 
+if(!process.env.IS_SERVERLESS){
   app.listen(4000)
 }
+
+module.exports = app;
