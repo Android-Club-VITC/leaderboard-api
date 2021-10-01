@@ -1,3 +1,5 @@
+const serverless = require("serverless-http")
+
 // loading env variables
 const dotenv = require('dotenv');
 dotenv.config();
@@ -19,10 +21,5 @@ app.get('/health', function (req, res) {
   res.send('200 OK')
 })
 
-if(process.env.IS_SERVERLESS){
-  const serverless = require("serverless-http")
-  module.exports.handler = serverless(app);
-}else{
-  // port to listen on 
-  app.listen(4000)
-}
+module.exports.handler = serverless(app);
+
