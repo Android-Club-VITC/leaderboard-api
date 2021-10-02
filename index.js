@@ -2,22 +2,16 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const express = require('express')
-const app = express()
+const app = require("./app");
+const connectDB = require("./utils/db");
 
-// auth endpoint handler
-const Auth = require('./routes/auth');
+async function init() {
+  
+  // mongo connect
+  await connectDB();
 
-// parses string to json 
-app.use(express.json());
+  // port to listen on 
+  app.listen(process.env.PORT);
+}
 
-// auth endpoint
-app.use('/api/auth',Auth)
-
-// test endpoint
-app.get('/health', function (req, res) {
-  res.send('200 OK')
-})
-
-// port to listen on 
-app.listen(4000)
+init();

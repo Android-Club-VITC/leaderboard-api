@@ -7,7 +7,7 @@ const createToken = (email) => {
       iss: process.env.JWT_ISSUER,
     },
     process.env.JWT_CERT,
-    { expiresIn: "1h" }
+    { expiresIn: "30 days" }
   );
   return t;
 };
