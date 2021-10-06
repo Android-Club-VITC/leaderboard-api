@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 
-const createToken = (email) => {
+const createToken = (email, role) => {
   const t = jwt.sign(
     {
+      role,
       email,
       iss: process.env.JWT_ISSUER,
     },
@@ -17,7 +18,6 @@ const decodeToken = (token) => {
     var decoded = jwt.verify(token, process.env.JWT_CERT, { issuer: process.env.JWT_ISSUER });
     return decoded;
   } catch (err) {
-    console.log(err);
     return null;
   }
 };

@@ -30,6 +30,7 @@ const Member = new Schema({
   department: {
     type: String,
     required: true,
+    enum: ["TECH","CONTENT","CREATIVE","OPERATIONS"],
   },
 
   role: {
@@ -47,6 +48,7 @@ const Member = new Schema({
   },
 
   member_type: {
+    type: String,
     enum: ["FFCS", "NON-FFCS"],
     required: true,
   },
@@ -57,5 +59,5 @@ const Member = new Schema({
   },
 });
 
-const Members = mongoose.model("Members", Member);
+const Members = mongoose.model("members", Member);
 module.exports = Members;
