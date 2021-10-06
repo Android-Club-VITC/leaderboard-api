@@ -11,7 +11,7 @@ async function init() {
   await connectDB();
 
   // port to listen on 
-  app.listen(process.env.PORT);
+  app.listen(process.env.PORT,()=>console.log("Listening on Port 3000"));
 }
 
 init();

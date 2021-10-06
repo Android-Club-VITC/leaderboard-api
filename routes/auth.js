@@ -1,7 +1,7 @@
 const express = require("express");
 
 // utils
-const { createToken, decodeToken } = require("../utils/token");
+const { createToken } = require("../utils/token");
 const generateOtp = require("../utils/otp");
 
 // Models
@@ -18,8 +18,8 @@ router.post("/verifyEmail", async (req, res) => {
       // generate opt
       const opt = generateOtp();
       result.opt = opt;
-      await result.save();
-      
+      await Members.findOneAndUpdate({ email }, { $set: { opt } });
+
       //TODO: send opt
 
       res.status(200).send();
@@ -27,27 +27,29 @@ router.post("/verifyEmail", async (req, res) => {
       res.status(401).send();
     }
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
 
-// TODO: /signin
-router.post("/signIn", async (req, res) => {
+// TODO: /loginIn
+router.post("/loginIn", async (req, res) => {
   try {
-    const { email, opt } = req.body;
-    const result = await Members.find({ email }).lean();
+    const { email, otp } = req.body;
+    const result = await Members.findOne({ email })
     if (result) {
       // check if otp is expired
-      if (result?.opt == parseInt(opt)) {
-
+      console.log(result.opt,otp);
+      if (result.opt > 999 && result.opt == parseInt(otp)) {
         // TODO: remove opt
-        await Members.findOneAndUpdate({ email }, { $unset: { opt: 1 } });
+        result.opt = -1;
+        await result.save();
 
         // generate token
-        const token = createToken(email);
+        const token = createToken(email, result.role);
 
         // set token in cookie
-        res.cookie("token", token, {
+        res.cookie("ac_token", token, {
           maxAge: 86400 * 1000 * 30, // 30 days
           httpOnly: true, // http only, prevents JavaScript cookie access
           secure: false, // cookie must be sent over https / ssl
@@ -61,6 +63,7 @@ router.post("/signIn", async (req, res) => {
       res.status(400).send();
     }
   } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
