@@ -31,7 +31,7 @@ const Member = new Schema({
   department: {
     type: String,
     required: true,
-    enum: ["TECH","CONTENT","CREATIVE","OPERATIONS"],
+    enum: ["TECHNICAL","CONTENT","CREATIVE","OPERATIONS"],
   },
 
   role: {
@@ -56,7 +56,7 @@ const Member = new Schema({
 
   reg_no: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 

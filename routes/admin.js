@@ -1,6 +1,8 @@
 const express = require("express");
+const axios = require("axios");
 
 // utils
+const { EMAIL_SERVICE } = require("../utils/endpoints");
 
 // Models
 const Members = require("../models/members");
@@ -10,14 +12,13 @@ const router = express.Router();
 
 router.post("/addMember", async (req, res) => {
   try {
-    const { name, email, department, role, member_type, reg_no } = req.body;
+    const { name, email, department, role, member_type } = req.body;
     const u = new Members({
       name,
       email,
       department,
       role,
       member_type,
-      reg_no,
     });
     await u.save();
 
@@ -28,6 +29,13 @@ router.post("/addMember", async (req, res) => {
       timeline: [],
     });
     await c.save();
+
+    //TODO: send otp
+    await axios.post(`${EMAIL_SERVICE}/api/mail/text`,{
+      to: email,
+      subject: "Registered to Android Club Leaderboard",
+      text: `You have been added as a member of android club and now you have full access to Leaderboard App. Enjoy!! <br />(This is an auto-generated mail, no need to reply to it)`
+    })
 
     res.status(201).send();
   } catch (e) {
