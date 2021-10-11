@@ -50,7 +50,7 @@ const Member = new Schema({
 
   member_type: {
     type: String,
-    enum: ["FFCS", "NON-FFCS"],
+    enum: ["FFCS", "NON-FFCS","CORE"],
     required: true,
   },
 
