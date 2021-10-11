@@ -18,7 +18,10 @@ const Timeline = new Schema({
 
 const Contribution = new Schema(
   { 
-    email: String,
+    email: {
+      type: String,
+      unique: true
+    },
     
     member: {
       type: Schema.Types.ObjectId,

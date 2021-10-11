@@ -17,6 +17,12 @@ app.use(express.json());
 // parses cookie
 app.use(cookieParser());
 
+// logger
+// app.all("*",(req,res,next)=> {
+//   console.log(`${req.originalUrl} -> ${req.body}`);  
+//   next();
+// })
+
 // auth endpoint
 app.use("/api/auth", Auth);
 app.use("/api/admin", verifyRole(1), Admin);
