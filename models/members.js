@@ -31,7 +31,7 @@ const Member = new Schema({
   department: {
     type: String,
     required: true,
-    enum: ["TECHNICAL","CONTENT","CREATIVE","OPERATIONS","PRESIDENT"],
+    enum: ["TECHNICAL","CONTENT","CREATIVE","OPERATIONS","PRESIDENT","VICE-PRESIDENT","GENERAL-SECRETARY","HUMAN-RESOURCES"],
   },
 
   role: {
