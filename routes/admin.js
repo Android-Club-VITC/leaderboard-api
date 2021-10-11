@@ -34,7 +34,7 @@ router.post("/addMember", async (req, res) => {
     await axios.post(`${EMAIL_SERVICE}/api/mail/text`,{
       to: email,
       subject: "Registered to Android Club Leaderboard",
-      text: `You have been added as a member of android club and now you have full access to Leaderboard App. Enjoy!! <br />(This is an auto-generated mail, no need to reply to it)`
+      text: `You have been added as a member of android club and now you have full access to Leaderboard App. Enjoy!! (This is an auto-generated mail, no need to reply to it)`
     })
 
     res.status(201).send();
