@@ -1,8 +1,13 @@
 const express = require("express");
+const axios = require("axios");
+
+// middleware
+const verifyRole = require("../middleware/role");
 
 // utils
 const { createToken } = require("../utils/token");
 const generateOtp = require("../utils/otp");
+const { EMAIL_SERVICE } = require("../utils/endpoints");
 
 // Models
 const Members = require("../models/members");
@@ -15,12 +20,17 @@ router.post("/verifyEmail", async (req, res) => {
     const { email } = req.body;
     const result = await Members.find({ email });
     if (result) {
-      // generate opt
-      const opt = generateOtp();
-      result.opt = opt;
-      await Members.findOneAndUpdate({ email }, { $set: { opt } });
+      // generate otp
+      const otp = generateOtp();
+      result.otp = otp;
+      await Members.findOneAndUpdate({ email }, { $set: { otp } });
 
-      //TODO: send opt
+      //TODO: send otp
+      await axios.post(`${EMAIL_SERVICE}/api/mail/text`,{
+        to: email,
+        subject: "OTP | Android Club",
+        text: `Your One Time Password (OTP): ${otp}`
+      }) 
 
       res.status(200).send();
     } else {
@@ -32,6 +42,10 @@ router.post("/verifyEmail", async (req, res) => {
   }
 });
 
+router.post("/verify", verifyRole(2), async (req, res) => {
+  res.send();
+})
+
 // TODO: /loginIn
 router.post("/loginIn", async (req, res) => {
   try {
@@ -39,21 +53,17 @@ router.post("/loginIn", async (req, res) => {
     const result = await Members.findOne({ email })
     if (result) {
       // check if otp is expired
-      console.log(result.opt,otp);
-      if (result.opt > 999 && result.opt == parseInt(otp)) {
+      console.log(result.otp,otp);
+      if (result.otp > 999 && result.otp == parseInt(otp)) {
         // TODO: remove opt
-        result.opt = -1;
+        result.otp = -1;
         await result.save();
 
         // generate token
         const token = createToken(email, result.role);
 
         // set token in cookie
-        res.cookie("ac_token", token, {
-          maxAge: 86400 * 1000 * 30, // 30 days
-          httpOnly: true, // http only, prevents JavaScript cookie access
-          secure: false, // cookie must be sent over https / ssl
-        });
+        res.set("AC_TOKEN", token);
 
         res.status(200).send();
       } else {

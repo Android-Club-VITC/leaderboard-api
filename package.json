@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Android-Club-VITC/leaderboard-api#readme",
   "dependencies": {
+    "axios": "^0.22.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

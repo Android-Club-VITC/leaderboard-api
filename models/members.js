@@ -20,6 +20,7 @@ const Member = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
 
   name: {
@@ -42,7 +43,7 @@ const Member = new Schema({
 
   socials: Socials,
 
-  opt: {
+  otp: {
     type: Number,
     required: false,
   },
