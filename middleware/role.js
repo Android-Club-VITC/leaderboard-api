@@ -11,7 +11,8 @@ const verifyRole = (role) => {
         next();
     }
     else {
-        res.status(401).send();  
+      console.log(d,h,req.header["AC_TOKEN"]);  
+      res.status(401).send();  
     }
   };
 };
