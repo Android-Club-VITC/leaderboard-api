@@ -6,9 +6,11 @@ const verifyRole = (role) => {
     const h = req.header('X-AC-SUPER-ADMIN');
     if (h == process.env.X_AC_SUPER_ADMIN){
         req.superadmin = true
+        req.email = "*"
         next();
     } else if(d?.role <= role) {
-        next();
+      req.email = d.email  
+      next();
     }
     else {  
       res.status(401).send();  

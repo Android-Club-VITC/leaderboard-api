@@ -8,7 +8,7 @@ const Contributions = require("../models/contributions");
 // TODO: get contribution data of each member in sorted order
 router.get("/getAllContribution", async (req, res) => {
   try {
-    const result = await Contributions.find({}, { _id: 0, "timeline._id": 0 })
+    const result = await Contributions.find({}, { _id: 0, timeline: 0, email: 0 })
       .sort({ score: -1, updatedAt: 1 })
       .populate("member",{name: 1, _id: 0})
       .lean();
