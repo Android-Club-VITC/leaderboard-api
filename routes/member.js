@@ -5,7 +5,7 @@ const router = express.Router();
 const Members = require("../models/members");
 const Contributions = require("../models/contributions");
 
-router.get("/getInfo", async (req, res) => {
+router.post("/getInfo", async (req, res) => {
   try {
     const { email } = req.body;
 
