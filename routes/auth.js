@@ -42,7 +42,7 @@ router.post("/verifyEmail", async (req, res) => {
   }
 });
 
-router.post("/verify", verifyRole(2), async (req, res) => {
+router.get("/verify", verifyRole(2), async (req, res) => {
   res.send();
 })
 
