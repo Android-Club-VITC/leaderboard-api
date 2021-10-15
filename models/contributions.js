@@ -19,17 +19,19 @@ const Timeline = new Schema({
 const Contribution = new Schema(
   { 
     email: {
-      type: String,
-      unique: true
+      type: String
     },
     
+    org: {
+      type: Schema.Types.ObjectId,
+      ref: "organizations"
+    },
+
     member: {
       type: Schema.Types.ObjectId,
       ref: "members"
     },
 
-    score: Number,
-    
     timeline: [Timeline],
   },
   {

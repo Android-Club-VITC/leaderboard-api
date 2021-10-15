@@ -29,34 +29,37 @@ const Member = new Schema({
     required: true,
   },
 
-  department: {
-    type: String,
-    required: true,
-    enum: ["TECHNICAL","CONTENT","CREATIVE","OPERATIONS","PRESIDENT","VICE-PRESIDENT","GENERAL-SECRETARY","HUMAN-RESOURCES"],
-  },
+  org: [
+    {
+      orgId: {
+        type: Schema.Types.ObjectId,
+        ref: "organizations"
+      },
 
-  role: {
-    type: Number,
-    default: 2,
-    enum: [1, 2],
-    required: true,
-  },
+      role: {
+        type: Number,
+        default: 2,
+        enum: [1, 2],
+        required: true,
+      },
+      
+      department: {
+        type: String,
+        required: true,
+      },
+      
+      member_type: {
+        type: String,
+        enum: ["FFCS", "NON-FFCS","CORE"],
+        required: true,
+      },
+    }
+  ],
 
   socials: Socials,
 
   otp: {
     type: Number,
-    required: false,
-  },
-
-  member_type: {
-    type: String,
-    enum: ["FFCS", "NON-FFCS","CORE"],
-    required: true,
-  },
-
-  reg_no: {
-    type: String,
     required: false,
   },
 });

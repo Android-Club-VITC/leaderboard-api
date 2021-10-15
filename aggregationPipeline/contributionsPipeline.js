@@ -1,58 +1,65 @@
 module.exports = {
-  getAllMemberContributionDetails: [
-    {
-      $lookup: {
-        from: "members",
-        let: {
-          uid: "$member",
+  getAllMemberContributionDetails(orgId) {
+    return [
+      {
+        $match: {
+          org: orgId,
         },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", "$$uid"],
+      },
+      {
+        $lookup: {
+          from: "members",
+          let: {
+            uid: "$member",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$uid"],
+                },
               },
             },
-          },
-          {
-            $project: {
-              name: 1,
-              member_type: 1,
-              department: 1,
-              _id: 0,
+            {
+              $project: {
+                name: 1,
+                member_type: 1,
+                department: 1,
+                _id: 0,
+              },
             },
-          },
-        ],
-        as: "member",
-      },
-    },
-    {
-      $unwind: {
-        path: "$member",
-      },
-    },
-    {
-      $match: {
-        "member.member_type": {
-          $ne: "CORE",
+          ],
+          as: "member",
         },
       },
-    },
-    {
-      $sort: {
-        score: -1,
-        updatedAt: 1,
+      {
+        $unwind: {
+          path: "$member",
+        },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        __v: 0,
+      {
+        $match: {
+          "member.member_type": {
+            $ne: "CORE",
+          },
+        },
       },
-    },
-  ],
+      {
+        $sort: {
+          score: -1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          createdAt: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
+      },
+    ];
+  },
   getAllMemberPublicContributionDetails: [
     {
       $lookup: {
@@ -114,47 +121,50 @@ module.exports = {
     },
   ],
 
-  getMemberContributionDetails(email) {return [
-    {
-      $match: { "email": email }
-    },
-     { $lookup: {
-        from: "members",
-        let: {
-          uid: "$member",
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$_id", "$$uid"],
+  getMemberContributionDetails(email,orgId) {
+    return [
+      {
+        $match: { email: email, org: orgId },
+      },
+      {
+        $lookup: {
+          from: "members",
+          let: {
+            uid: "$member",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$uid"],
+                },
               },
             },
-          },
-          {
-            $project: {
-              name: 1,
-              member_type: 1,
-              department: 1,
-              _id: 0,
+            {
+              $project: {
+                name: 1,
+                member_type: 1,
+                department: 1,
+                _id: 0,
+              },
             },
-          },
-        ],
-        as: "member",
+          ],
+          as: "member",
+        },
       },
-    },
-    {
-      $unwind: {
-        path: "$member",
+      {
+        $unwind: {
+          path: "$member",
+        },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        __v: 0,
+      {
+        $project: {
+          _id: 0,
+          createdAt: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
       },
-    },    
-  ]}
+    ];
+  },
 };

@@ -12,19 +12,38 @@ const router = express.Router();
 
 router.post("/addMember", async (req, res) => {
   try {
-    const { name, email, department, role, member_type } = req.body;
-    const u = new Members({
-      name,
-      email,
+    const { email, department, role, member_type } = req.body;
+    const orgId = req.orgId;
+
+    const m = await Members.find({email}).lean()
+    
+    const orgInfo = {
+      orgId,
       department,
       role,
-      member_type,
-    });
-    await u.save();
+      member_type
+    }
+
+    if (m) {
+      const u = await Members.findOneAndUpdate(
+        { email },
+        {
+          $push: { org: orgInfo },
+        }
+      );
+      await u.save();  
+    }
+    else {
+      const u = new Members({
+        email,
+        org: [orgInfo]
+      });
+      await u.save();
+    }
 
     const c = new Contributions({
-      score: 0,
       member: u,
+      org: orgId,
       email,
       timeline: [],
     });
@@ -33,8 +52,8 @@ router.post("/addMember", async (req, res) => {
     //TODO: send otp
     await axios.post(`${EMAIL_SERVICE}/api/mail/text`,{
       to: email,
-      subject: "Registered to Android Club Leaderboard",
-      text: `You have been added as a member of android club and now you have full access to Leaderboard App. Enjoy!! (This is an auto-generated mail, no need to reply to it)`
+      subject: "Registered to an Organization Leaderboard",
+      text: `You have been added as a member and now you have full access to Leaderboard App developed by Android Club. Enjoy!! (This is an auto-generated mail, no need to reply to it)`
     })
 
     res.status(201).send();
@@ -47,17 +66,14 @@ router.post("/addMember", async (req, res) => {
 // TODO: add contribution
 router.post("/addContribution", async (req, res) => {
   try {
+    const orgId = req.orgId;
     const { email, contribs } = req.body;
-    const s = contribs.reduce((a, b) => a.points + b.points, { points: 0 });
     const c = await Contributions.findOneAndUpdate(
-      { email },
+      { email, org: orgId },
       {
         $push: { timeline: { $each: contribs } },
       }
-    );
-    c.score = c.score + s;
-    await c.save();
-
+    );    
     res.status(200).send();
   } catch (e) {
     console.log(e);
