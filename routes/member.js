@@ -5,6 +5,9 @@ const router = express.Router();
 const Members = require("../models/members");
 const Contributions = require("../models/contributions");
 
+// pipeline
+const contributionsPipeline = require("../aggregationPipeline/contributionsPipeline");
+
 router.post("/getInfo", async (req, res) => {
   try {
     const { email } = req.body;
@@ -25,10 +28,7 @@ router.post("/getInfo", async (req, res) => {
 // TODO: get contribution data of each member in sorted order
 router.get("/getAllContribution", async (req, res) => {
   try {
-    const result = await Contributions.find({}, { _id: 0, "timeline._id": 0 })
-      .sort({ score: -1, updatedAt: 1 })
-      .populate("member", { name: 1, _id: 0 })
-      .lean();
+    const result = await Contributions.aggregate(contributionsPipeline.getAllMemberContributionDetails)
     res.send(result);
   } catch (e) {
     console.log(e);
@@ -40,12 +40,7 @@ router.get("/getAllContribution", async (req, res) => {
 router.post("/getContribution", async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await Contributions.findOne(
-      { email },
-      { _id: 0, "timeline._id": 0 }
-    )
-      .populate("member", { name: 1, _id: 0 })
-      .lean();
+    const result = await Contributions.aggregate(contributionsPipeline.getMemberContributionDetails(email))
     res.send(result);
   } catch (e) {
     res.status(500).send();
