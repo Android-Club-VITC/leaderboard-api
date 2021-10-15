@@ -5,6 +5,7 @@ const Socials = new Schema({
   linkedin: String,
   discord: String,
   github: String,
+  instagram: String,
 });
 
 // const Otp = new Schema(

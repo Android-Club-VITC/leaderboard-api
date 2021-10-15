@@ -28,7 +28,9 @@ router.post("/getInfo", async (req, res) => {
 // TODO: get contribution data of each member in sorted order
 router.get("/getAllContribution", async (req, res) => {
   try {
-    const result = await Contributions.aggregate(contributionsPipeline.getAllMemberContributionDetails)
+    const result = await Contributions.aggregate(
+      contributionsPipeline.getAllMemberContributionDetails
+    );
     res.send(result);
   } catch (e) {
     console.log(e);
@@ -40,9 +42,28 @@ router.get("/getAllContribution", async (req, res) => {
 router.post("/getContribution", async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await Contributions.aggregate(contributionsPipeline.getMemberContributionDetails(email))
+    const result = await Contributions.aggregate(
+      contributionsPipeline.getMemberContributionDetails(email)
+    );
     res.send(result);
   } catch (e) {
+    res.status(500).send();
+  }
+});
+
+router.post("/editSocials", async (req, res) => {
+  try {
+    const { email, socials } = req.body;
+    const m = await Members.findOneAndUpdate(
+      { email },
+      {
+        socials,
+      }
+    );
+    m.save();
+    res.send();
+  } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
