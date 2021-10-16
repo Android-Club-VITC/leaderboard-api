@@ -51,7 +51,7 @@ router.get("/verify", async (req, res) => {
     const d = decodeToken(req.header("ac_token"));
     let result = await Members.aggregate(userOrgInfoPipeline.getUsersAllOrgInfo(d.email));
     result = result[0]
-    res.send({ org: result.org_info });
+    res.send({ email: d.email, org: result.org_info });
   } catch(e) {
     res.status(401).send();
   }
