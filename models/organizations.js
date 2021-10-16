@@ -7,6 +7,11 @@ const Organization = new Schema({
     required: true,
   },
 
+  email: {
+    type: String,
+    required: false
+  },
+
   imageLink: {
       type: String,
       required: false         

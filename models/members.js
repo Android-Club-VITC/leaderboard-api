@@ -33,7 +33,8 @@ const Member = new Schema({
     {
       orgId: {
         type: Schema.Types.ObjectId,
-        ref: "organizations"
+        ref: "organizations",
+        unique: true
       },
 
       role: {
@@ -45,13 +46,13 @@ const Member = new Schema({
       
       department: {
         type: String,
-        required: true,
+        required: false,
       },
       
       member_type: {
         type: String,
         enum: ["FFCS", "NON-FFCS","CORE"],
-        required: true,
+        required: false,
       },
     }
   ],
