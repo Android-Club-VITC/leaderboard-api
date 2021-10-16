@@ -13,8 +13,8 @@ router.post("/getInfo", async (req, res) => {
   try {
     const { email } = req.body;
     const result = await Members.findOne(
-      { email, "org.orgId": req.header("orgId") },
-      { _id: 0, "socials._id": 0, opt: 0 }
+      { email, "org.orgId": req.orgId },
+      { _id: 0, "socials._id": 0, otp: 0, "org.orgId": 0 }
     ).lean();
     res.send(result);
   } catch (e) {
@@ -40,12 +40,32 @@ router.get("/getAllContribution", async (req, res) => {
 router.post("/getContribution", async (req, res) => {
   try {
     const { email } = req.body;
-    const result = await Contributions.aggregate([
+    let result = await Contributions.aggregate([
       ...contributionsPipeline.getMemberContributionDetails(email, req.orgId),
       ...calculateScorePipeline.calculateScore,
     ]);
+    result = result[0];
     res.send(result);
   } catch (e) {
+    res.status(500).send();
+  }
+});
+
+router.post("/editName", async (req, res) => {
+  try {
+    const { email, name } = req.body;
+    if (req.email !== email) res.status(401).send();
+    else {
+      const m = await Members.findOneAndUpdate(
+        { email },
+        {
+          name
+        }
+      );
+      res.send();
+    }
+  } catch (e) {
+    console.log(e);
     res.status(500).send();
   }
 });
@@ -61,7 +81,6 @@ router.post("/editSocials", async (req, res) => {
           socials,
         }
       );
-      m.save();
       res.send();
     }
   } catch (e) {
@@ -69,5 +88,6 @@ router.post("/editSocials", async (req, res) => {
     res.status(500).send();
   }
 });
+
 
 module.exports = router;

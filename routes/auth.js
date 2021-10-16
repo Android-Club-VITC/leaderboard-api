@@ -5,12 +5,15 @@ const axios = require("axios");
 const verifyRole = require("../middleware/role");
 
 // utils
-const { createToken } = require("../utils/token");
+const { createToken, decodeToken } = require("../utils/token");
 const generateOtp = require("../utils/otp");
 const { EMAIL_SERVICE } = require("../utils/endpoints");
 
 // Models
 const Members = require("../models/members");
+
+// pipeline
+const userOrgInfoPipeline = require("../aggregationPipeline/userOrgInfoPipeline");
 
 const router = express.Router();
 
@@ -42,30 +45,38 @@ router.post("/verifyEmail", async (req, res) => {
   }
 });
 
-router.get("/verify", verifyRole(2), async (req, res) => {
-  res.send({email: req.email});
+// verify
+router.get("/verify", async (req, res) => {
+  try {
+    const d = decodeToken(req.header("ac_token"));
+    let result = await Members.aggregate(userOrgInfoPipeline.getUsersAllOrgInfo(d.email));
+    result = result[0]
+    res.send({ org: result.org_info });
+  } catch(e) {
+    res.status(401).send();
+  }
 })
 
 // TODO: /loginIn
-router.post("/loginIn", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const result = await Members.findOne({ email })
+    let result = await Members.aggregate(userOrgInfoPipeline.getUsersAllOrgInfo(email));
+    result = result[0];
     if (result) {
       // check if otp is expired
-      console.log(result.otp,otp);
       if (result.otp > 999 && result.otp == parseInt(otp)) {
+        
         // TODO: remove opt
-        result.otp = -1;
-        await result.save();
+        await Members.updateOne({email},{$set: {otp: -1}});
 
         // generate token
         const token = createToken(email, result.role);
 
         // set token in cookie
         res.set("AC_TOKEN", token);
-
-        res.status(200).send();
+        
+        res.send({ org: result.org_info });
       } else {
         res.status(401).send();
       }
