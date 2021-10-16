@@ -1,15 +1,17 @@
+const objectId = require('mongoose').Types.ObjectId;
+
 module.exports = {
     getUserRoleInOrg(email,orgId) {
         return [
             {
                 "$unwind": {
-                    path: "org"      
+                    path: "$org"      
                 }
             },
             {
                 "$match": {
                     email: email,
-                    "org.orgId": orgId
+                    "org.orgId": objectId(orgId)
                 }
             },
 

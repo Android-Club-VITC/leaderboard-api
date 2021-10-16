@@ -1,9 +1,11 @@
+const objectId = require("mongoose").Types.ObjectId;
+
 module.exports = {
   getAllMemberContributionDetails(orgId) {
     return [
       {
         $match: {
-          org: orgId,
+          org: objectId(orgId),
         },
       },
       {
@@ -21,20 +23,31 @@ module.exports = {
               },
             },
             {
+              $unwind: {
+                path: "$org",
+              },
+            },
+            {
+              $match: {
+                "org.orgId": objectId(orgId),
+              },
+            },
+            {
+              $set: {
+                department: "$org.department",
+                member_type: "$org.member_type",
+              },
+            },
+            {
               $project: {
                 name: 1,
-                member_type: 1,
                 department: 1,
+                member_type: 1,
                 _id: 0,
               },
             },
           ],
           as: "member",
-        },
-      },
-      {
-        $unwind: {
-          path: "$member",
         },
       },
       {
@@ -51,11 +64,17 @@ module.exports = {
         },
       },
       {
+        $unwind: {
+          path: "$member"
+        }
+      },
+      {
         $project: {
           _id: 0,
           createdAt: 0,
           updatedAt: 0,
           __v: 0,
+          org: 0
         },
       },
     ];
@@ -99,14 +118,17 @@ module.exports = {
         },
       },
     },
-
     {
       $sort: {
         score: -1,
         updatedAt: 1,
       },
     },
-
+    {
+      $unwind: {
+        path: "$member"
+      }
+    },
     {
       $project: {
         _id: 0,
@@ -121,10 +143,10 @@ module.exports = {
     },
   ],
 
-  getMemberContributionDetails(email,orgId) {
+  getMemberContributionDetails(email, orgId) {
     return [
       {
-        $match: { email: email, org: orgId },
+        $match: { email: email, org: objectId(orgId) },
       },
       {
         $lookup: {
@@ -141,6 +163,22 @@ module.exports = {
               },
             },
             {
+              $unwind: {
+                path: "$org",
+              },
+            },
+            {
+              $match: {
+                "org.orgId": objectId(orgId),
+              },
+            },
+            {
+              $set: {
+                department: "$org.department",
+                member_type: "$org.member_type",
+              },
+            },
+            {
               $project: {
                 name: 1,
                 member_type: 1,
@@ -154,8 +192,8 @@ module.exports = {
       },
       {
         $unwind: {
-          path: "$member",
-        },
+          path: "$member"
+        }
       },
       {
         $project: {
@@ -163,6 +201,7 @@ module.exports = {
           createdAt: 0,
           updatedAt: 0,
           __v: 0,
+          org: 0
         },
       },
     ];
