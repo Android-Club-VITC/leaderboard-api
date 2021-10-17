@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const objectId = require("mongoose").Types.ObjectId;
+
 // models
 const Members = require("../models/members");
 const Contributions = require("../models/contributions");
@@ -9,11 +11,14 @@ const Contributions = require("../models/contributions");
 const contributionsPipeline = require("../aggregationPipeline/contributionsPipeline");
 const calculateScorePipeline = require("../aggregationPipeline/calculateScore");
 
+// service 
+const { AVATAR_SERVICE } = require("../utils/endpoints");
+
 router.post("/getInfo", async (req, res) => {
   try {
     const { email } = req.body;
     const result = await Members.findOne(
-      { email, "org.orgId": req.orgId },
+      { email, "org.orgId": objectId(req.orgId) },
       { _id: 0, "socials._id": 0, otp: 0, "org.orgId": 0 }
     ).lean();
     res.send(result);
@@ -50,6 +55,25 @@ router.post("/getContribution", async (req, res) => {
     res.status(500).send();
   }
 });
+
+router.post("/generateAvatar", async (req, res) => {
+  try {
+    const { email, seed } = req.body
+    if (req.email !== email) res.status(401).send();
+    else {
+    const avatar = `${AVATAR_SERVICE}/${encodeURIComponent(seed)}.svg`
+    await Members.findOneAndUpdate({
+      email
+    }, {
+      avatar
+    })
+    res.send();
+  }
+  } catch(e) {
+    console.log(e);
+    res.status(500).send();
+  }
+})
 
 router.post("/editName", async (req, res) => {
   try {

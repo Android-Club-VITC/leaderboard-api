@@ -3,7 +3,7 @@ const axios = require("axios");
 const objectId = require("mongoose").Types.ObjectId;
 
 // utils
-const { EMAIL_SERVICE } = require("../utils/endpoints");
+const { EMAIL_SERVICE, AVATAR_SERVICE } = require("../utils/endpoints");
 const generateUname = require("../utils/uname");
 
 // Models
@@ -39,11 +39,14 @@ module.exports = {
             }
           );
         } else {
-          res.status(400).send();
+          throw new Error("email/org not found");
         }
       } else {
+        const name = generateUname();
+        const avatar = `${AVATAR_SERVICE}/${encodeURIComponent(name)}.svg`;
         m = new Members({
-          name: generateUname(),
+          name,
+          avatar,
           email,
           org: [orgInfo],
         });
