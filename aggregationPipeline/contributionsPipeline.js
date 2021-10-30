@@ -1,3 +1,4 @@
+const calculateScorePipeline = require("./calculateScore");
 const objectId = require("mongoose").Types.ObjectId;
 
 module.exports = {
@@ -41,6 +42,8 @@ module.exports = {
             {
               $project: {
                 name: 1,
+                socials: 1,
+                avatar: 1,
                 department: 1,
                 member_type: 1,
                 _id: 0,
@@ -57,6 +60,7 @@ module.exports = {
           },
         },
       },
+      ...calculateScorePipeline.calculateScore,
       {
         $sort: {
           score: -1,
@@ -183,6 +187,8 @@ module.exports = {
                 name: 1,
                 member_type: 1,
                 department: 1,
+                socials: 1,
+                avatar: 1,
                 _id: 0,
               },
             },
