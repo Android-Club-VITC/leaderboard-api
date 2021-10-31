@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const uuid = require("uuid-quick");
 
 const objectId = require("mongoose").Types.ObjectId;
 
@@ -11,7 +12,7 @@ const Contributions = require("../models/contributions");
 const contributionsPipeline = require("../aggregationPipeline/contributionsPipeline");
 const calculateScorePipeline = require("../aggregationPipeline/calculateScore");
 
-// service 
+// service
 const { AVATAR_SERVICE } = require("../utils/endpoints");
 
 router.post("/getInfo", async (req, res) => {
@@ -58,22 +59,26 @@ router.post("/getContribution", async (req, res) => {
 
 router.post("/generateAvatar", async (req, res) => {
   try {
-    const { email, seed } = req.body
+    const { email } = req.body;
     if (req.email !== email) res.status(401).send();
     else {
-    const avatar = `${AVATAR_SERVICE}/${encodeURIComponent(seed)}.svg`
-    await Members.findOneAndUpdate({
-      email
-    }, {
-      avatar
-    })
-    res.send();
-  }
-  } catch(e) {
+      const seed = uuid();
+      const avatar = `${AVATAR_SERVICE}/${encodeURIComponent(seed)}.svg`;
+      await Members.findOneAndUpdate(
+        {
+          email,
+        },
+        {
+          avatar,
+        }
+      );
+      res.send();
+    }
+  } catch (e) {
     console.log(e);
     res.status(500).send();
   }
-})
+});
 
 router.post("/editName", async (req, res) => {
   try {
@@ -83,7 +88,7 @@ router.post("/editName", async (req, res) => {
       const m = await Members.findOneAndUpdate(
         { email },
         {
-          name
+          name,
         }
       );
       res.send();
@@ -112,6 +117,5 @@ router.post("/editSocials", async (req, res) => {
     res.status(500).send();
   }
 });
-
 
 module.exports = router;
