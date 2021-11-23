@@ -37,8 +37,7 @@ const Member = new Schema({
     {
       orgId: {
         type: Schema.Types.ObjectId,
-        ref: "organizations",
-        unique: true
+        ref: "organizations"
       },
 
       role: {
