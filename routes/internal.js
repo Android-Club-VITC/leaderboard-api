@@ -18,7 +18,7 @@ router.post("/addOrg", async (req, res, next) => {
       name: orgName
     });
     await o.save();
-    req.headers['AC_ORGID'] = o._id;
+    req.orgId = o._id;
     req.body = {
       email,
       role,
