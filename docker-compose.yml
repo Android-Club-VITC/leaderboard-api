@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    image: ac-leaderboard
+    container_name: ac.leaderboard
+    volumes:
+      - .:/app
+    command: ["npm","start"]  
+    ports:
+      - "4000:4000"
+networks:
+  default:
+      name: ac
