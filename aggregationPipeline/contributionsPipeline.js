@@ -53,13 +53,6 @@ module.exports = {
           as: "member",
         },
       },
-      {
-        $match: {
-          "member.member_type": {
-            $ne: "CORE",
-          },
-        },
-      },
       ...calculateScorePipeline.calculateScore,
       {
         $sort: {

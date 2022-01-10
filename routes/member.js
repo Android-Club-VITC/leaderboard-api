@@ -32,8 +32,7 @@ router.post("/getInfo", async (req, res) => {
 router.get("/getAllContribution", async (req, res) => {
   try {
     const result = await Contributions.aggregate([
-      ...contributionsPipeline.getAllMemberContributionDetails(req.orgId),
-      ...calculateScorePipeline.calculateScore,
+      ...contributionsPipeline.getAllMemberContributionDetails(req.orgId)
     ]);
     res.send(result);
   } catch (e) {
